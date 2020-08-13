@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
     # Create Producer instance
     producer = Producer({
-        # Exercise: Add your producer configuration here
+        'bootstrap.servers': 'localhost:32768,localhost:32769,localhost:32770'
     })
 
     delivered_records = 0
@@ -65,10 +65,11 @@ if __name__ == '__main__':
     for n in range(10):
         city = random.choice(cities)
         temp = random.choice(temps)
-
-        # Exercise: Create a Json with the city and temp
-        # Send a message to kafka with the city as key and the json as value
-
+        j = json.dumps({'city': city, 'temp': temp})
+        record_key = city
+        record_value = json.dumps(j)
+        print("Producing record: {}\t{}".format(record_key, record_value))
+        producer.produce(topic, key=record_key, value=record_value, on_delivery=acked)
         # p.poll() serves delivery reports (on_delivery)
         # from previous produce() calls.
         producer.poll(0)

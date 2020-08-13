@@ -34,8 +34,9 @@ if __name__ == '__main__':
     # 'auto.offset.reset=earliest' to start reading from the beginning of the
     #   topic if no committed offsets exist
     consumer = Consumer({
-        # Exercise: Add the consumer setting
-        # Make sure you add a consumer group and choose to reset offset to earliest
+        'bootstrap.servers': 'localhost:32768,localhost:32769,localhost:32770',
+        'group.id': 'python_example_group_1',
+        'auto.offset.reset': 'earliest',
     })
 
     # Subscribe to topic
@@ -57,10 +58,14 @@ if __name__ == '__main__':
             elif msg.error():
                 print('error: {}'.format(msg.error()))
             else:
-
-                # Exercise: Read and print the key and value
-                pass
-
+                # Check for Kafka message
+                record_key = msg.key()
+                record_value = msg.value()
+                print(record_value)
+                data = json.loads(record_value)
+                print("Consumed record with key {} and value {}, \
+                      and updated total count to {}"
+                      .format(record_key, record_value, 0))
     except KeyboardInterrupt:
         pass
     finally:
